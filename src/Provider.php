@@ -6,6 +6,7 @@ use AdminUI\AdminUIInstaller\Actions\CheckDatabaseConnectionAction;
 use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseAction;
 use AdminUI\AdminUIInstaller\Actions\TestAction;
 use AdminUI\AdminUIInstaller\Facades\Composer as FacadesComposer;
+use AdminUI\AdminUIInstaller\Facades\Json;
 use Illuminate\Support\Composer;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,7 +22,9 @@ class Provider extends ServiceProvider
         $this->mergeConfigFrom($this->root . '/config/adminui-installer.php', 'adminui-installer');
 
         $this->app->singleton(\AdminUI\AdminUIInstaller\Facades\Install::class, fn () => new \AdminUI\AdminUIInstaller\Services\InstallService);
-        $this->app->singleton(\AdminUI\AdminUIInstaller\Facades\Composer::class, fn () => new \AdminUI\AdminUIInstaller\Services\ComposerService());
+        $this->app->singleton(\AdminUI\AdminUIInstaller\Facades\Composer::class, fn () => new \AdminUI\AdminUIInstaller\Services\ComposerService);
+        $this->app->singleton(\AdminUI\AdminUIInstaller\Facades\Json::class, fn () => new \AdminUI\AdminUIInstaller\Services\JsonService);
+
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -37,7 +40,8 @@ class Provider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/Views', 'adminui-installer');
         $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
 
-        $output = FacadesComposer::run("update --no-scripts --no-interaction");
-        dd($output);
+        /* $output = FacadesComposer::run("update --no-scripts --no-interaction");
+        dd($output); */
+        dd(Json::get());
     }
 }
