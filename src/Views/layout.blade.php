@@ -17,6 +17,10 @@
                             'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif',
                             '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'
                         ],
+                    },
+                    colors: {
+                        primary: "#dc2626",
+                        panel: "#252529"
                     }
                 }
             }
@@ -36,14 +40,14 @@
 
 <body class="relative h-full w-full bg-gradient-to-br from-slate-800 to-indigo-900 bg-no-repeat font-sans text-white">
     <div class="-z-1 bg-norepeat pointer-events-none absolute inset-0 overflow-hidden bg-cover opacity-40 grayscale">
-        <x-adminui-installer::background></x-adminui-installer::background>
+        <x-adminui-installer::background />
     </div>
     <main v-scope class="flex h-full w-full items-center justify-center">
-        <div class="mx-auto mb-8 max-w-full rounded bg-slate-700/50 p-8 shadow-lg shadow-black backdrop-blur">
+        <div class="mx-auto mb-8 max-w-full rounded bg-panel p-8 shadow-lg shadow-black backdrop-blur">
             @yield('content')
         </div>
         <div v-cloak class="h-full overflow-hidden bg-white text-black transition-all duration-500 ease-in-out"
-            :class="{
+            v-bind:class="{
                 'w-0': !isInstalling && !installStarted,
                 'w-1/2': isInstalling || installStarted,
             }">

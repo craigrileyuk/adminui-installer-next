@@ -2,17 +2,13 @@
 
 namespace AdminUI\AdminUIInstaller\Actions;
 
-use Illuminate\Support\Composer;
+use AdminUI\AdminUIInstaller\Facades\Composer;
 
 class ComposerUpdateAction
 {
-    public function __construct(public Composer $composer)
-    {
-        $this->composer->setWorkingPath(base_path());
-    }
-
     public function execute()
     {
-        return $this->composer->getVersion();
+        $output = Composer::run("update --no-scripts --no-interaction");
+        return $output;
     }
 }

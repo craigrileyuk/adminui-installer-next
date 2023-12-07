@@ -16,11 +16,10 @@
                 and then click the install button.</p>
         </div>
     </div>
-    <div class="mt-8" v-scope>
+    <div class="mt-8">
         <form id="installation-form" @submit.prevent="onSubmit">
             <div class="mb-3">
-                <x-adminui-installer::input-text model="key" disabled="isInstalling || status.saveKey"
-                    placeholder="Your AdminUI Licence Key">
+                <x-adminui-installer::input-text model="key" placeholder="Your AdminUI Licence Key">
                     <x-slot:icon>
                         <svg class="mr-2 h-6 w-6" viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -29,7 +28,7 @@
                     </x-slot:icon>
                 </x-adminui-installer::input-text>
                 <div class="px-2 text-sm text-red-300 opacity-0 transition-opacity" :class="{ 'opacity-100': error }">
-                    @{{ error }}&nbsp;
+                    ${ error }&nbsp;
                 </div>
             </div>
             <div class="flex items-center justify-between">
@@ -70,6 +69,21 @@
                     <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
                     Saved Licence Key
                 </li>
+                <li v-if="status.downloadRelease" class="flex items-center">
+                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
+                    Downloaded Latest Release
+                </li>
+                <li v-if="status.releaseDetails?.version" class="flex items-center">
+                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
+                    Unpacked ${ status.releaseDetails.version }
+                </li>
+                <li v-if="status.dependencies" class="flex items-center">
+                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
+                    Updated Dependencies
+                </li>
+                <li>
+                    <x-adminui-installer::loader />
+                </li>
             </ul>
         </div>
     </div>
@@ -77,6 +91,10 @@
 
 @push('scripts')
     <script type="module" defer>
+        import {
+            createApp
+        } from 'https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js?module';
+
         const request = async (url, data = {}, config = {}) => {
             const result = await fetch(url, {
                 method: config.method ?? "POST",
@@ -92,18 +110,9 @@
             return await result.json();
         }
 
-        const genericError = {
-            status: 'error',
-            error: 'Server error'
-        };
-
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        import {
-            createApp
-        } from 'https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js?module';
-
-        const app = createApp({
+        createApp({
             $delimiters: ['${', '}'],
             key: "{{ config('adminui-installer.test_key') ?? '' }}",
             version: "",
@@ -121,12 +130,28 @@
                 return false;
             },
             async onSubmit() {
-                const stepOne = await request("{{ route('adminui.installer.save-key') }}", {
-                    licence_key: this.key
-                });
-                console.log(stepOne);
-                this.isInstalling = !this.isInstalling;
+                this.isInstalling = true;
 
+                if (!this.status.saveKey) {
+                    const stepOne = await request("{{ route('adminui.installer.save-key') }}", {
+                        licence_key: this.key
+                    });
+                    this.status = stepOne.status;
+                }
+
+                if (!this.status.downloadRelease) {
+                    const stepTwo = await request("{{ route('adminui.installer.download-release') }}");
+                    this.status = stepTwo.status;
+                }
+
+                if (!this.status.dependencies) {
+                    const stepFour = await request("{{ route('adminui.installer.dependencies') }}");
+                    this.status = stepFour.status;
+                }
+
+                setTimeout(() => {
+                    this.isInstalling = false;
+                }, 2000)
             },
         }).mount();
     </script>

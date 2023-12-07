@@ -8,9 +8,9 @@ use AdminUI\AdminUIInstaller\Controllers\RegisterController;
 use AdminUI\AdminUIInstaller\Controllers\UninstallController;
 
 Route::get('/install-adminui',                  [InstallController::class, 'index'])->name('adminui.installer.index');
-Route::post('/install-adminui/download',        [InstallController::class, 'downloadInstaller'])->name('adminui.installer.download');
+//Route::post('/install-adminui/download',        [InstallController::class, 'downloadInstaller'])->name('adminui.installer.download');
 Route::post('/install-adminui/extract',         [InstallController::class, 'extractInstaller'])->name('adminui.installer.extract');
-Route::post('/install-adminui/composer',        [InstallController::class, 'updateComposer'])->name('adminui.installer.dependencies');
+// Route::post('/install-adminui/composer',        [InstallController::class, 'updateComposer'])->name('adminui.installer.dependencies');
 Route::post('/install-adminui/base-publish',    [InstallController::class, 'basePublish'])->name('adminui.installer.base-publish');
 Route::post('/install-adminui/base-migrations', [InstallController::class, 'baseMigrations'])->name('adminui.installer.base-migrations');
 Route::post('/install-adminui/publish',         [InstallController::class, 'publish'])->name('adminui.installer.publish');

@@ -13,9 +13,21 @@ class JsonService
         $this->file = config('adminui-installer.root') . '/resources/status.json';
     }
 
+    private function getDefault()
+    {
+        return [
+            "saveKey" => false
+        ];
+    }
+
     public function get(): array
     {
-        $string = file_get_contents($this->file);
+        try {
+            $string = file_get_contents($this->file);
+        } catch (\Exception $e) {
+            return $this->getDefault();
+        }
+        if (empty($string)) return $this->getDefault();
         return json_decode($string, true);
     }
 
