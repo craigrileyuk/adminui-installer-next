@@ -7,7 +7,6 @@ use AdminUI\AdminUIInstaller\Controllers\InstallController;
 use AdminUI\AdminUIInstaller\Controllers\RegisterController;
 use AdminUI\AdminUIInstaller\Controllers\UninstallController;
 
-
 Route::get('/install-adminui',                  [InstallController::class, 'index'])->name('adminui.installer.index');
 Route::post('/install-adminui/download',        [InstallController::class, 'downloadInstaller'])->name('adminui.installer.download');
 Route::post('/install-adminui/extract',         [InstallController::class, 'extractInstaller'])->name('adminui.installer.extract');
