@@ -1,11 +1,14 @@
-<span class="step-loader border-b-primary"></span>
+<span {{ $attributes->merge([
+    'class' => 'step-loader border-b-primary border-x-white border-t-white',
+]) }}></span>
 
 @push('scripts')
     <style>
         .step-loader {
             width: 28px;
             height: 28px;
-            border: 3px solid #FFF;
+            border-width: 4px;
+            border-style: solid;
             border-radius: 50%;
             display: inline-block;
             box-sizing: border-box;

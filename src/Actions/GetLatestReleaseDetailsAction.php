@@ -3,8 +3,9 @@
 namespace AdminUI\AdminUIInstaller\Actions;
 
 use Illuminate\Support\Facades\Http;
+use AdminUI\AdminUIInstaller\Facades\Json;
 
-class GetLatestReleaseAction
+class GetLatestReleaseDetailsAction
 {
     protected string $key;
 
@@ -26,6 +27,7 @@ class GetLatestReleaseAction
             }
         });
 
-        return $response->json();
+        $releaseDetails = $response->json();
+        Json::setField('releaseDetails', $releaseDetails);
     }
 }

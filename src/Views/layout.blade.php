@@ -43,10 +43,10 @@
         <x-adminui-installer::background />
     </div>
     <main v-scope class="flex h-full w-full items-center justify-center">
-        <div class="mx-auto mb-8 max-w-full rounded bg-panel p-8 shadow-lg shadow-black backdrop-blur">
+        <div class="bg-panel mx-auto mb-8 max-w-full rounded p-8 shadow-lg shadow-black backdrop-blur">
             @yield('content')
         </div>
-        <div v-cloak class="h-full overflow-hidden bg-white text-black transition-all duration-500 ease-in-out"
+        <div v-cloak class="h-full overflow-auto bg-white text-black transition-all duration-500 ease-in-out"
             v-bind:class="{
                 'w-0': !isInstalling && !installStarted,
                 'w-1/2': isInstalling || installStarted,

@@ -31,59 +31,67 @@
                     ${ error }&nbsp;
                 </div>
             </div>
-            <div class="flex items-center justify-between">
-                <div v-if="installError" v-text="installError" class="max-w-sm text-red-300"></div>
-                <div v-else v-text="installMessage" class="max-w-sm animate-pulse text-white/80"></div>
+            <div class="flex items-center justify-end">
+
                 <x-adminui-installer::button loading="isInstalling" type="submit">
                     <x-slot:icon>
                         <svg class="-ml-1 mr-2 h-6 w-6" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
                         </svg>
                     </x-slot:icon>
-                    Install
+                    <span v-if="!status.saveKey">Install</span>
+                    <span v-else>Continue Installation</span>
                 </x-adminui-installer::button>
             </div>
-            {{-- @if (true === $isMigrated)
-                <div class="mt-8 flex items-center rounded border-l-8 border-l-blue-500 bg-blue-500/40 p-4">
-                    <div class="mr-4">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/80">
-                            <svg class="h-6 w-6" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div>It seems that a previously attempted install failed. Use the above form to reattempt.</div>
-                </div>
-            @endif --}}
         </form>
     </div>
 @stop
 
 @section('sidebar')
     <div class="flex min-h-full w-full justify-center py-4">
-        <div>
-            <h1 class="mb-8 text-lg font-black uppercase">Installation Progress</h1>
+        <div class="w-3/4">
+            <h1 class="mb-8 text-center text-lg font-black uppercase">Installation Progress</h1>
             <ul>
-                <li v-if="status.saveKey" class="flex items-center">
-                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
-                    Saved Licence Key
-                </li>
-                <li v-if="status.downloadRelease" class="flex items-center">
-                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
-                    Downloaded Latest Release
-                </li>
-                <li v-if="status.releaseDetails?.version" class="flex items-center">
-                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
-                    Unpacked ${ status.releaseDetails.version }
-                </li>
-                <li v-if="status.dependencies" class="flex items-center">
-                    <x-adminui-installer::icon-check class="mr-2 w-8 text-green-700" />
-                    Updated Dependencies
-                </li>
-                <li>
-                    <x-adminui-installer::loader />
-                </li>
+                <x-adminui-installer::step-status key="saveKey" loading-text="Saving licence key"
+                    done-text="Licence key saved" />
+
+                <x-adminui-installer::step-status key="getLatestReleaseDetails"
+                    loading-text="Getting latest release details"
+                    done-text="Found AdminUI ${status.releaseDetails?.version}" />
+
+                <x-adminui-installer::step-status key="downloadRelease"
+                    loading-text="Dowloading version ${status.releaseDetails?.version}"
+                    done-text="${status.downloadStats}" />
+
+                <x-adminui-installer::step-status key="unpackRelease"
+                    loading-text="Unpacking version ${status.releaseDetails?.version}"
+                    done-text="Unpacked size was ${status.installSize}" />
+
+                <x-adminui-installer::step-status key="prepareDependencies" loading-text="Preparing dependencies"
+                    done-text="Ready to update dependencies" />
+
+                <x-adminui-installer::step-status key="dependencies" loading-text="Updating dependenices"
+                    done-text="Dependencies updated">
+                    <x-slot:append>
+                        <button class="bg-primary rounded px-2 uppercase text-white"
+                            v-on:click="showComposerLog = !showComposerLog">
+                            <span v-if="showComposerLog">Hide Log</span>
+                            <span v-else>Show Log</span>
+                        </button>
+                    </x-slot>
+                    <x-slot:footer>
+                        <div class="grid w-full transition-all duration-500 ease-in-out"
+                            v-bind:style="{
+                    'grid-template-rows': showComposerLog ? '1fr' : '0fr'
+                }">
+                            <div class="overflow-hidden">
+                                <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
+                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.composerLog }</pre>
+                                </code>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-adminui-installer::step-status>
             </ul>
         </div>
     </div>
@@ -115,10 +123,9 @@
         createApp({
             $delimiters: ['${', '}'],
             key: "{{ config('adminui-installer.test_key') ?? '' }}",
-            version: "",
             error: "",
             status: @json($status),
-            installMessage: "",
+            showComposerLog: false,
             installError: "",
             isInstalling: false,
             get installStarted() {
@@ -133,20 +140,41 @@
                 this.isInstalling = true;
 
                 if (!this.status.saveKey) {
+                    this.status.saveKey = "loading";
                     const stepOne = await request("{{ route('adminui.installer.save-key') }}", {
                         licence_key: this.key
                     });
                     this.status = stepOne.status;
                 }
 
+                if (!this.status.getLatestReleaseDetails) {
+                    this.status.getLatestReleaseDetails = "loading";
+                    const result = await request("{{ route('adminui.installer.release-details') }}");
+                    this.status = result.status;
+                }
+
                 if (!this.status.downloadRelease) {
-                    const stepTwo = await request("{{ route('adminui.installer.download-release') }}");
-                    this.status = stepTwo.status;
+                    this.status.downloadRelease = "loading";
+                    const result = await request("{{ route('adminui.installer.download-release') }}");
+                    this.status = result.status;
+                }
+
+                if (!this.status.unpackRelease) {
+                    this.status.unpackRelease = "loading";
+                    const result = await request("{{ route('adminui.installer.unpack-release') }}");
+                    this.status = result.status;
+                }
+
+                if (!this.status.prepareDependencies) {
+                    this.status.prepareDependencies = "loading";
+                    const result = await request("{{ route('adminui.installer.prepare-dependencies') }}");
+                    this.status = result.status;
                 }
 
                 if (!this.status.dependencies) {
-                    const stepFour = await request("{{ route('adminui.installer.dependencies') }}");
-                    this.status = stepFour.status;
+                    this.status.dependencies = "loading";
+                    const result = await request("{{ route('adminui.installer.dependencies') }}");
+                    this.status = result.status;
                 }
 
                 setTimeout(() => {
