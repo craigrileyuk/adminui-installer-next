@@ -92,6 +92,29 @@
                         </div>
                     </x-slot>
                 </x-adminui-installer::step-status>
+
+                <x-adminui-installer::step-status key="setupPermissions" loading-text="Setting up permissions"
+                    done-text="Permissions setup">
+                    <x-slot:append>
+                        <button class="bg-primary rounded px-2 uppercase text-white"
+                            v-on:click="showPermissionLog = !showPermissionLog">
+                            <span v-if="showPermissionLog">Hide Log</span>
+                            <span v-else>Show Log</span>
+                        </button>
+                    </x-slot>
+                    <x-slot:footer>
+                        <div class="grid w-full transition-all duration-500 ease-in-out"
+                            v-bind:style="{
+                    'grid-template-rows': showPermissionLog ? '1fr' : '0fr'
+                }">
+                            <div class="overflow-hidden">
+                                <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
+                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.setupPermissionsLog }</pre>
+                                </code>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-adminui-installer::step-status>
             </ul>
         </div>
     </div>
@@ -126,6 +149,7 @@
             error: "",
             status: @json($status),
             showComposerLog: false,
+            showPermissionLog: false,
             installError: "",
             isInstalling: false,
             get installStarted() {
@@ -174,6 +198,12 @@
                 if (!this.status.dependencies) {
                     this.status.dependencies = "loading";
                     const result = await request("{{ route('adminui.installer.dependencies') }}");
+                    this.status = result.status;
+                }
+
+                if (!this.status.setupPermissions) {
+                    this.status.setupPermissions = "loading";
+                    const result = await request("{{ route('adminui.installer.setup-permissions') }}");
                     this.status = result.status;
                 }
 

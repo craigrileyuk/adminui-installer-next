@@ -11,4 +11,5 @@ Route::prefix('install-adminui')->as('adminui.installer.')->group(function () {
     Route::post('unpack-release', [InstallController::class, 'unpackRelease'])->name('unpack-release');
     Route::post('prepare-dependencies', [InstallController::class, 'prepareDependencies'])->name('prepare-dependencies');
     Route::post('dependencies', [InstallController::class, 'updateDependencies'])->name('dependencies');
+    Route::post('setup-permissions', [InstallController::class, 'setupPermissions'])->name('setup-permissions');
 });

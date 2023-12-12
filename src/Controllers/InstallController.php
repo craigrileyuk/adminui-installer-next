@@ -6,15 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use AdminUI\AdminUIInstaller\Facades\Json;
 use AdminUI\AdminUIInstaller\Facades\Install;
+use AdminUI\AdminUIInstaller\Actions\BaseSetupAction;
 use AdminUI\AdminUIInstaller\Actions\UnpackReleaseAction;
 use AdminUI\AdminUIInstaller\Actions\ComposerUpdateAction;
 use AdminUI\AdminUIInstaller\Actions\SaveLicenceKeyAction;
-use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseAction;
+use AdminUI\AdminUIInstaller\Actions\UpdateComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\DownloadLatestReleaseAction;
 use AdminUI\AdminUIInstaller\Actions\CheckDatabaseConnectionAction;
 use AdminUI\AdminUIInstaller\Actions\CreateLocalComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseDetailsAction;
-use AdminUI\AdminUIInstaller\Actions\UpdateComposerFileAction;
 
 class InstallController extends Controller
 {
@@ -112,6 +112,19 @@ class InstallController extends Controller
     {
         $action->execute();
         Json::setField(field: "dependencies", data: true);
+
+        return response()->json(
+            [
+                'status' => Json::get()
+            ]
+        );
+    }
+
+    public function setupPermissions(BaseSetupAction $action)
+    {
+        $output = $action->execute();
+        Json::setField(field: "setupPermissions", data: true);
+        Json::setField(field: "setupPermissionsLog", data: $output);
 
         return response()->json(
             [

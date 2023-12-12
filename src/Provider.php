@@ -33,6 +33,17 @@ class Provider extends ServiceProvider
                 \AdminUI\AdminUIInstaller\Commands\UpdateCommand::class
             ]);
         }
+
+        $spatieBase = base_path('vendor/spatie/laravel-permission');
+        if (!config('permission')) {
+            $this->publishes([
+                $spatieBase . '/config/permission.php' => config_path('permission.php'),
+            ], 'spatie-permission-config');
+
+            $this->publishes([
+                $spatieBase . '/database/migrations/create_permission_tables.php.stub' => $this->app->databasePath() . '/migrations/2000_01_01_create_permission_tables.php',
+            ], 'spatie-permission-migrations');
+        }
     }
 
     public function boot()
