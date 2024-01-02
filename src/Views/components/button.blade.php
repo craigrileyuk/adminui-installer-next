@@ -1,9 +1,11 @@
-@props(['loading' => '', 'type' => 'button', 'tag' => 'button'])
+@props(['loading' => 'false', 'disabled' => 'false', 'type' => 'button', 'tag' => 'button', 'icon' => ''])
 
 <{{ $tag }}
-    class="relative mb-1 mr-1 inline-flex rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear after:absolute after:inset-0 after:z-0 after:bg-current after:opacity-0 after:transition-opacity hover:shadow-lg hover:after:opacity-10 focus:outline-none active:bg-blue-800"
-    :disabled="{{ $loading }}" :class="{
-        'pointer-events-none': {{ $loading }}
+    class="relative inline-flex rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear after:absolute after:inset-0 after:z-0 after:bg-current after:opacity-0 after:transition-opacity hover:shadow-lg hover:after:opacity-10 focus:outline-none active:bg-blue-800"
+    v-bind:disabled="{{ $loading }} || {{ $disabled }}"
+    v-bind:class="{
+        'pointer-events-none': {{ $loading }} || {{ $disabled }},
+        'grayscale': {{ $disabled }}
     }"
     type="{{ $type }}" {{ $attributes }}>
     <div class="flex items-center transition-opacity" :class="{

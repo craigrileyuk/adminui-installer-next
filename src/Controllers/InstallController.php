@@ -6,15 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use AdminUI\AdminUIInstaller\Facades\Json;
 use AdminUI\AdminUIInstaller\Facades\Install;
-use AdminUI\AdminUIInstaller\Actions\BaseSetupAction;
 use AdminUI\AdminUIInstaller\Actions\UnpackReleaseAction;
 use AdminUI\AdminUIInstaller\Actions\ComposerUpdateAction;
 use AdminUI\AdminUIInstaller\Actions\SaveLicenceKeyAction;
+use AdminUI\AdminUIInstaller\Actions\PublishResourcesAction;
 use AdminUI\AdminUIInstaller\Actions\UpdateComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\DownloadLatestReleaseAction;
 use AdminUI\AdminUIInstaller\Actions\CheckDatabaseConnectionAction;
 use AdminUI\AdminUIInstaller\Actions\CreateLocalComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseDetailsAction;
+use AdminUI\AdminUIInstaller\Actions\RunMigrationsAction;
 
 class InstallController extends Controller
 {
@@ -120,11 +121,24 @@ class InstallController extends Controller
         );
     }
 
-    public function setupPermissions(BaseSetupAction $action)
+    public function publishResources(PublishResourcesAction $action)
     {
         $output = $action->execute();
-        Json::setField(field: "setupPermissions", data: true);
-        Json::setField(field: "setupPermissionsLog", data: $output);
+        Json::setField(field: "publishResources", data: true);
+        Json::setField(field: "publishResourcesLog", data: $output);
+
+        return response()->json(
+            [
+                'status' => Json::get()
+            ]
+        );
+    }
+
+    public function runMigrations(RunMigrationsAction $action)
+    {
+        $output = $action->execute();
+        Json::setField(field: "runMigrations", data: true);
+        Json::setField(field: "runMigrationsLog", data: $output);
 
         return response()->json(
             [

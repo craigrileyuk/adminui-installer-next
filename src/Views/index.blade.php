@@ -33,7 +33,7 @@
             </div>
             <div class="flex items-center justify-end">
 
-                <x-adminui-installer::button loading="isInstalling" type="submit">
+                <x-adminui-installer::button loading="isInstalling" type="submit" disabled="status.runMigrations">
                     <x-slot:icon>
                         <svg class="-ml-1 mr-2 h-6 w-6" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
@@ -93,28 +93,56 @@
                     </x-slot>
                 </x-adminui-installer::step-status>
 
-                <x-adminui-installer::step-status key="setupPermissions" loading-text="Setting up permissions"
-                    done-text="Permissions setup">
+                <x-adminui-installer::step-status key="publishResources" loading-text="Publishing required resources"
+                    done-text="Published">
                     <x-slot:append>
                         <button class="bg-primary rounded px-2 uppercase text-white"
-                            v-on:click="showPermissionLog = !showPermissionLog">
-                            <span v-if="showPermissionLog">Hide Log</span>
+                            v-on:click="showPublishResourcesLog = !showPublishResourcesLog">
+                            <span v-if="showPublishResourcesLog">Hide Log</span>
                             <span v-else>Show Log</span>
                         </button>
                     </x-slot>
                     <x-slot:footer>
                         <div class="grid w-full transition-all duration-500 ease-in-out"
                             v-bind:style="{
-                    'grid-template-rows': showPermissionLog ? '1fr' : '0fr'
+                    'grid-template-rows': showPublishResourcesLog ? '1fr' : '0fr'
                 }">
                             <div class="overflow-hidden">
                                 <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
-                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.setupPermissionsLog }</pre>
+                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.publishResourcesLog }</pre>
                                 </code>
                             </div>
                         </div>
                     </x-slot>
                 </x-adminui-installer::step-status>
+
+                <x-adminui-installer::step-status key="runMigrations" loading-text="Running database migrations"
+                    done-text="Migrations run">
+                    <x-slot:append>
+                        <button class="bg-primary rounded px-2 uppercase text-white"
+                            v-on:click="showRunMigrationsLog = !showRunMigrationsLog">
+                            <span v-if="showRunMigrationsLog">Hide Log</span>
+                            <span v-else>Show Log</span>
+                        </button>
+                    </x-slot>
+                    <x-slot:footer>
+                        <div class="grid w-full transition-all duration-500 ease-in-out"
+                            v-bind:style="{
+                    'grid-template-rows': showRunMigrationsLog ? '1fr' : '0fr'
+                }">
+                            <div class="overflow-hidden">
+                                <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
+                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.runMigrationsLog }</pre>
+                                </code>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-adminui-installer::step-status>
+
+                <div v-if="status.runMigrations === true" class="flex justify-end pt-12">
+                    <x-adminui-installer::button>Register Admin</x-adminui-installer::button>
+                </div>
+
             </ul>
         </div>
     </div>
@@ -149,7 +177,8 @@
             error: "",
             status: @json($status),
             showComposerLog: false,
-            showPermissionLog: false,
+            showPublishResourcesLog: false,
+            showRunMigrationsLog: false,
             installError: "",
             isInstalling: false,
             get installStarted() {
@@ -201,9 +230,15 @@
                     this.status = result.status;
                 }
 
-                if (!this.status.setupPermissions) {
-                    this.status.setupPermissions = "loading";
-                    const result = await request("{{ route('adminui.installer.setup-permissions') }}");
+                if (!this.status.publishResources) {
+                    this.status.publishResources = "loading";
+                    const result = await request("{{ route('adminui.installer.publish-resources') }}");
+                    this.status = result.status;
+                }
+
+                if (!this.status.runMigrations) {
+                    this.status.runMigrations = "loading";
+                    const result = await request("{{ route('adminui.installer.run-migrations') }}");
                     this.status = result.status;
                 }
 

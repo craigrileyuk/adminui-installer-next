@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\PermissionServiceProvider;
 
-class BaseSetupAction
+class PublishResourcesAction
 {
     public function execute()
     {
@@ -34,8 +34,6 @@ class BaseSetupAction
         $output .= Artisan::output();
 
         Artisan::call('config:clear');
-
-        Artisan::call("migrate");
         $output .= Artisan::output();
 
         return Str::of($output)->explode("\n")->filter(fn ($item) => !empty(trim($item)))->values();

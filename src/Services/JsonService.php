@@ -31,7 +31,7 @@ class JsonService
         return json_decode($string, true);
     }
 
-    public function set(array $json): void
+    public function set(array|object $json): void
     {
         $string = json_encode($json, JSON_PRETTY_PRINT);
         file_put_contents($this->file, $string);
