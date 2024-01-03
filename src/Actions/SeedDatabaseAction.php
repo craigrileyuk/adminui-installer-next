@@ -6,12 +6,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 
 
-class RunMigrationsAction
+class SeedDatabaseAction
 {
-    public function execute(bool $update = false)
+    public function execute()
     {
-        $cmd = $update === true ? "migrate" : "migrate:fresh";
-        Artisan::call($cmd);
+        $dbSeeder = new \AdminUI\AdminUI\Database\Seeds\DatabaseSeeder;
+        $dbSeeder->run();
+
         $output = Artisan::output();
 
         return Str::of($output)->explode("\n")->filter(fn ($item) => !empty(trim($item)))->values();

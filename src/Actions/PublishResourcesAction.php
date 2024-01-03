@@ -33,6 +33,10 @@ class PublishResourcesAction
         ]);
         $output .= Artisan::output();
 
+        if (!Schema::hasTable('jobs')) {
+            Artisan::call('queue:table');
+        }
+
         Artisan::call('config:clear');
         $output .= Artisan::output();
 

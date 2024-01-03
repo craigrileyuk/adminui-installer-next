@@ -33,7 +33,7 @@
             </div>
             <div class="flex items-center justify-end">
 
-                <x-adminui-installer::button loading="isInstalling" type="submit" disabled="status.runMigrations">
+                <x-adminui-installer::button loading="isInstalling" type="submit" disabled="status.installComplete">
                     <x-slot:icon>
                         <svg class="-ml-1 mr-2 h-6 w-6" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
@@ -139,7 +139,30 @@
                     </x-slot>
                 </x-adminui-installer::step-status>
 
-                <div v-if="status.runMigrations === true" class="flex justify-end pt-12">
+                <x-adminui-installer::step-status key="seedDatabase" loading-text="Seeding database"
+                    done-text="Database seeded">
+                    <x-slot:append>
+                        <button class="bg-primary rounded px-2 uppercase text-white"
+                            v-on:click="showSeedDatabaseLog = !showSeedDatabaseLog">
+                            <span v-if="showSeedDatabaseLog">Hide Log</span>
+                            <span v-else>Show Log</span>
+                        </button>
+                    </x-slot>
+                    <x-slot:footer>
+                        <div class="grid w-full transition-all duration-500 ease-in-out"
+                            v-bind:style="{
+                    'grid-template-rows': showSeedDatabaseLog ? '1fr' : '0fr'
+                }">
+                            <div class="overflow-hidden">
+                                <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
+                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.seedDatabaseLog }</pre>
+                                </code>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-adminui-installer::step-status>
+
+                <div v-if="status.installComplete === true" class="flex justify-end pt-12">
                     <x-adminui-installer::button>Register Admin</x-adminui-installer::button>
                 </div>
 
@@ -179,6 +202,7 @@
             showComposerLog: false,
             showPublishResourcesLog: false,
             showRunMigrationsLog: false,
+            showSeedDatabaseLog: false,
             installError: "",
             isInstalling: false,
             get installStarted() {
@@ -239,6 +263,12 @@
                 if (!this.status.runMigrations) {
                     this.status.runMigrations = "loading";
                     const result = await request("{{ route('adminui.installer.run-migrations') }}");
+                    this.status = result.status;
+                }
+
+                if (!this.status.seedDatabase) {
+                    this.status.seedDatabase = "loading";
+                    const result = await request("{{ route('adminui.installer.seed-database') }}");
                     this.status = result.status;
                 }
 

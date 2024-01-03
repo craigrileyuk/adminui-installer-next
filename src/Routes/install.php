@@ -15,4 +15,5 @@ Route::prefix('install-adminui')->as('adminui.installer.')->group(function () {
     Route::post('dependencies', [InstallController::class, 'updateDependencies'])->name('dependencies');
     Route::post('publish-resources', [InstallController::class, 'publishResources'])->name('publish-resources');
     Route::post('run-migrations', [InstallController::class, 'runMigrations'])->name('run-migrations');
+    Route::post('seed-database', [InstallController::class, 'seedDatabase'])->name('seed-database');
 });

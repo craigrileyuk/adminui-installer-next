@@ -16,6 +16,7 @@ use AdminUI\AdminUIInstaller\Actions\CheckDatabaseConnectionAction;
 use AdminUI\AdminUIInstaller\Actions\CreateLocalComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseDetailsAction;
 use AdminUI\AdminUIInstaller\Actions\RunMigrationsAction;
+use AdminUI\AdminUIInstaller\Actions\SeedDatabaseAction;
 
 class InstallController extends Controller
 {
@@ -139,6 +140,20 @@ class InstallController extends Controller
         $output = $action->execute();
         Json::setField(field: "runMigrations", data: true);
         Json::setField(field: "runMigrationsLog", data: $output);
+
+        return response()->json(
+            [
+                'status' => Json::get()
+            ]
+        );
+    }
+
+    public function seedDatabase(SeedDatabaseAction $action)
+    {
+        $output = $action->execute();
+        Json::setField(field: "seedDatabase", data: true);
+        Json::setField(field: "seedDatabaseLog", data: $output);
+        Json::setField(field: "installComplete", data: true);
 
         return response()->json(
             [

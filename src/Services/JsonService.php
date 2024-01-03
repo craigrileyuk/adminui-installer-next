@@ -2,6 +2,7 @@
 
 namespace AdminUI\AdminUIInstaller\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 
 class JsonService
@@ -40,7 +41,7 @@ class JsonService
     public function getField(string $field): mixed
     {
         $array = $this->get();
-        return $array[$field];
+        return Arr::get($array, $field);
     }
 
     public function setField(string $field, mixed $data): void
