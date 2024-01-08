@@ -12,9 +12,5 @@ class SeedDatabaseAction
     {
         $dbSeeder = new \AdminUI\AdminUI\Database\Seeds\DatabaseSeeder;
         $dbSeeder->run();
-
-        $output = Artisan::output();
-
-        return Str::of($output)->explode("\n")->filter(fn ($item) => !empty(trim($item)))->values();
     }
 }

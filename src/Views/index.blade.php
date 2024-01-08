@@ -140,30 +140,11 @@
                 </x-adminui-installer::step-status>
 
                 <x-adminui-installer::step-status key="seedDatabase" loading-text="Seeding database"
-                    done-text="Database seeded">
-                    <x-slot:append>
-                        <button class="bg-primary rounded px-2 uppercase text-white"
-                            v-on:click="showSeedDatabaseLog = !showSeedDatabaseLog">
-                            <span v-if="showSeedDatabaseLog">Hide Log</span>
-                            <span v-else>Show Log</span>
-                        </button>
-                    </x-slot>
-                    <x-slot:footer>
-                        <div class="grid w-full transition-all duration-500 ease-in-out"
-                            v-bind:style="{
-                    'grid-template-rows': showSeedDatabaseLog ? '1fr' : '0fr'
-                }">
-                            <div class="overflow-hidden">
-                                <code class="bg-panel relative block rounded px-2 py-1 text-xs text-white">
-                                    <pre class="max-w-full overflow-hidden whitespace-pre-wrap">${ status.seedDatabaseLog }</pre>
-                                </code>
-                            </div>
-                        </div>
-                    </x-slot>
-                </x-adminui-installer::step-status>
+                    done-text="Database seeded" />
 
                 <div v-if="status.installComplete === true" class="flex justify-end pt-12">
-                    <x-adminui-installer::button>Register Admin</x-adminui-installer::button>
+                    <x-adminui-installer::button tag="a" href="{{ route('adminui.installer.register') }}">Register
+                        Admin</x-adminui-installer::button>
                 </div>
 
             </ul>
