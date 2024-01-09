@@ -23,11 +23,13 @@ class InstallController extends Controller
     public function index(CheckDatabaseConnectionAction $checkDb)
     {
         $hasDbConnection = $checkDb->execute();
-        Install::getZipPath();
+        $isInstalled = Json::getField('installComplete');
 
         // if no database connection
         if (false === $hasDbConnection) {
             return view('adminui-installer::no-database');
+        } else if (true === $isInstalled) {
+            return view('adminui-installer::already-installed');
         }
 
         return view('adminui-installer::index', [

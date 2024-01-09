@@ -9,6 +9,6 @@ Route::post('/install-adminui/clear-cache',     [UtilsController::class, 'clearC
 Route::get('/install-adminui/register',         [RegisterController::class, 'index'])->name('adminui.installer.register');
 Route::post('/install-adminui/register',        [RegisterController::class, 'store'])->name('adminui.installer.register.store');
 
-Route::get('/update-adminui/check',             [UpdateController::class, 'checkUpdate'])->name('adminui.update.check');
+Route::get('/update-adminui/check',             [UpdateController::class, 'check'])->name('adminui.update.check');
 Route::get('/update-adminui/refresh',           [UpdateController::class, 'refresh'])->name('adminui.update.refresh');
 Route::post('/update-adminui',                  [UpdateController::class, 'updateSystem'])->name('adminui.update.install');

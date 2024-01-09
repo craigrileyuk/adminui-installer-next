@@ -37,6 +37,12 @@ class PublishResourcesAction
             Artisan::call('queue:table');
         }
 
+        Artisan::call('vendor:publish', [
+            '--tag'      => 'adminui-public',
+            '--force'    => true
+        ]);
+        $output .= Artisan::output();
+
         Artisan::call('config:clear');
         $output .= Artisan::output();
 
