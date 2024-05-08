@@ -17,6 +17,7 @@ use AdminUI\AdminUIInstaller\Actions\CreateLocalComposerFileAction;
 use AdminUI\AdminUIInstaller\Actions\GetLatestReleaseDetailsAction;
 use AdminUI\AdminUIInstaller\Actions\RunMigrationsAction;
 use AdminUI\AdminUIInstaller\Actions\SeedDatabaseAction;
+use AdminUI\AdminUIInstaller\Actions\UpdateVersionEntryAction;
 
 class InstallController extends Controller
 {
@@ -150,11 +151,14 @@ class InstallController extends Controller
         );
     }
 
-    public function seedDatabase(SeedDatabaseAction $action)
+    public function seedDatabase(SeedDatabaseAction $action, UpdateVersionEntryAction $versionAction)
     {
         $output = $action->execute();
         Json::setField(field: "seedDatabase", data: true);
         Json::setField(field: "seedDatabaseLog", data: $output);
+
+        $releaseDetails = Json::getField('releaseDetails');
+        $versionAction->execute($releaseDetails['version']);
         Json::setField(field: "installComplete", data: true);
 
         return response()->json(

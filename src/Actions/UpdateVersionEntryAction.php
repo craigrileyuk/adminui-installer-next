@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class UpdateVersionEntryAction
 {
-    public function updateVersionEntry(string $version = "v0.0.1")
+    public function execute(string $version = "v0.0.1")
     {
         return \AdminUI\AdminUI\Models\Configuration::updateOrCreate(
             ['name' => 'installed_version'],

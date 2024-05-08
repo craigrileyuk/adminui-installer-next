@@ -38,7 +38,7 @@
     <title>@yield('title')</title>
 </head>
 
-<body class="relative h-full w-full bg-gradient-to-br from-slate-800 to-indigo-900 bg-no-repeat font-sans text-white">
+<body class="relative h-full w-full bg-gradient-to-br from-red-500 to-red-800 bg-no-repeat font-sans text-white">
     <div class="-z-1 bg-norepeat pointer-events-none absolute inset-0 overflow-hidden bg-cover opacity-40 grayscale">
         <x-adminui-installer::background />
     </div>

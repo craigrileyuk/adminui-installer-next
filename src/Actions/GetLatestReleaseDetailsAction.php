@@ -11,7 +11,7 @@ class GetLatestReleaseDetailsAction
 
     public function __construct()
     {
-        $this->key = env('ADMINUI_LICENCE_KEY');
+        $this->key = config('adminui-installer.licence');
     }
 
     public function execute()
@@ -29,5 +29,6 @@ class GetLatestReleaseDetailsAction
 
         $releaseDetails = $response->json();
         Json::setField('releaseDetails', $releaseDetails);
+        return $releaseDetails;
     }
 }

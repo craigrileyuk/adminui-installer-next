@@ -4,20 +4,20 @@ namespace AdminUI\AdminUIInstaller\Traits;
 
 trait SlimJsonResponse
 {
-    public function sendSuccess(array $data = null)
+    public function sendSuccess(array|string $data = null, array $log = [])
     {
         return response()->json([
             'status' => 'success',
             'data'  => $data,
-            'log'   => [],
+            'log'   => $log,
         ]);
     }
-    public function sendFailed(string $errorMessage)
+    public function sendFailed(string $errorMessage, array $log = [])
     {
         return response()->json([
             'status' => 'failed',
             'error' => $errorMessage,
-            'log'   => []
+            'log'   => $log
         ]);
     }
 }

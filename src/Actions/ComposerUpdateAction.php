@@ -12,5 +12,6 @@ class ComposerUpdateAction
     {
         $output = Composer::run("update --no-interaction --no-ansi");
         Json::setField(field: "composerLog", data: Str::replace("\n", "", $output));
+        return $output;
     }
 }

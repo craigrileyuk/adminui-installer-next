@@ -73,7 +73,7 @@
                 <x-adminui-installer::step-status key="dependencies" loading-text="Updating dependenices"
                     done-text="Dependencies updated">
                     <x-slot:append>
-                        <button class="bg-primary rounded px-2 uppercase text-white"
+                        <button class="rounded bg-blue-600 px-2 uppercase text-white"
                             v-on:click="showComposerLog = !showComposerLog">
                             <span v-if="showComposerLog">Hide Log</span>
                             <span v-else>Show Log</span>
@@ -96,7 +96,7 @@
                 <x-adminui-installer::step-status key="publishResources" loading-text="Publishing required resources"
                     done-text="Published">
                     <x-slot:append>
-                        <button class="bg-primary rounded px-2 uppercase text-white"
+                        <button class="rounded bg-blue-600 px-2 uppercase text-white"
                             v-on:click="showPublishResourcesLog = !showPublishResourcesLog">
                             <span v-if="showPublishResourcesLog">Hide Log</span>
                             <span v-else>Show Log</span>
@@ -119,7 +119,7 @@
                 <x-adminui-installer::step-status key="runMigrations" loading-text="Running database migrations"
                     done-text="Migrations run">
                     <x-slot:append>
-                        <button class="bg-primary rounded px-2 uppercase text-white"
+                        <button class="rounded bg-blue-600 px-2 uppercase text-white"
                             v-on:click="showRunMigrationsLog = !showRunMigrationsLog">
                             <span v-if="showRunMigrationsLog">Hide Log</span>
                             <span v-else>Show Log</span>
@@ -196,61 +196,64 @@
             },
             async onSubmit() {
                 this.isInstalling = true;
+                try {
+                    if (!this.status.saveKey) {
+                        this.status.saveKey = "loading";
+                        const stepOne = await request("{{ route('adminui.installer.save-key') }}", {
+                            licence_key: this.key
+                        });
+                        this.status = stepOne.status;
+                    }
 
-                if (!this.status.saveKey) {
-                    this.status.saveKey = "loading";
-                    const stepOne = await request("{{ route('adminui.installer.save-key') }}", {
-                        licence_key: this.key
-                    });
-                    this.status = stepOne.status;
-                }
+                    if (!this.status.getLatestReleaseDetails) {
+                        this.status.getLatestReleaseDetails = "loading";
+                        const result = await request("{{ route('adminui.installer.release-details') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.getLatestReleaseDetails) {
-                    this.status.getLatestReleaseDetails = "loading";
-                    const result = await request("{{ route('adminui.installer.release-details') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.downloadRelease) {
+                        this.status.downloadRelease = "loading";
+                        const result = await request("{{ route('adminui.installer.download-release') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.downloadRelease) {
-                    this.status.downloadRelease = "loading";
-                    const result = await request("{{ route('adminui.installer.download-release') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.unpackRelease) {
+                        this.status.unpackRelease = "loading";
+                        const result = await request("{{ route('adminui.installer.unpack-release') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.unpackRelease) {
-                    this.status.unpackRelease = "loading";
-                    const result = await request("{{ route('adminui.installer.unpack-release') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.prepareDependencies) {
+                        this.status.prepareDependencies = "loading";
+                        const result = await request("{{ route('adminui.installer.prepare-dependencies') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.prepareDependencies) {
-                    this.status.prepareDependencies = "loading";
-                    const result = await request("{{ route('adminui.installer.prepare-dependencies') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.dependencies) {
+                        this.status.dependencies = "loading";
+                        const result = await request("{{ route('adminui.installer.dependencies') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.dependencies) {
-                    this.status.dependencies = "loading";
-                    const result = await request("{{ route('adminui.installer.dependencies') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.publishResources) {
+                        this.status.publishResources = "loading";
+                        const result = await request("{{ route('adminui.installer.publish-resources') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.publishResources) {
-                    this.status.publishResources = "loading";
-                    const result = await request("{{ route('adminui.installer.publish-resources') }}");
-                    this.status = result.status;
-                }
+                    if (!this.status.runMigrations) {
+                        this.status.runMigrations = "loading";
+                        const result = await request("{{ route('adminui.installer.run-migrations') }}");
+                        this.status = result.status;
+                    }
 
-                if (!this.status.runMigrations) {
-                    this.status.runMigrations = "loading";
-                    const result = await request("{{ route('adminui.installer.run-migrations') }}");
-                    this.status = result.status;
-                }
-
-                if (!this.status.seedDatabase) {
-                    this.status.seedDatabase = "loading";
-                    const result = await request("{{ route('adminui.installer.seed-database') }}");
-                    this.status = result.status;
+                    if (!this.status.seedDatabase) {
+                        this.status.seedDatabase = "loading";
+                        const result = await request("{{ route('adminui.installer.seed-database') }}");
+                        this.status = result.status;
+                    }
+                } catch (err) {
+                    this.error = err;
                 }
 
                 setTimeout(() => {

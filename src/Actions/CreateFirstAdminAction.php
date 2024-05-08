@@ -28,12 +28,8 @@ class CreateFirstAdminAction
             $config->value      = $data['company'];
             $config->save();
 
-            // Add any other permissions
-            $permissions = \Spatie\Permission\Models\Permission::where('guard_name', 'admin')->get();
-
-            foreach ($permissions as $permission) {
-                $admin->givePermissionTo($permission);
-            }
+            $admin->assignRole('Super Admin');
+            $admin->syncPermissions([]);
 
             Auth::guard('admin')->login($admin);
         });

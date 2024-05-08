@@ -13,7 +13,7 @@ class DownloadLatestReleaseAction
 
     public function __construct()
     {
-        $this->key = env('ADMINUI_LICENCE_KEY');
+        $this->key = config('adminui-installer.licence');
     }
 
     public function execute()

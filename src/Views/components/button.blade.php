@@ -14,7 +14,7 @@
     type="{{ $type }}"
     {{ $attributes->merge([
         'class' =>
-            'relative inline-flex rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear after:absolute after:inset-0 after:z-0 after:bg-current after:opacity-0 after:transition-opacity hover:shadow-lg hover:after:opacity-10 focus:outline-none active:bg-blue-800',
+            'relative inline-flex rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear after:absolute after:inset-0 after:z-0 after:bg-current after:opacity-0 after:transition-opacity hover:shadow-lg hover:after:opacity-10 focus:outline-none active:bg-blue-800',
     ]) }}>
     <div class="flex items-center transition-opacity" :class="{
         'opacity-0': {{ $loading }}
